@@ -1,14 +1,19 @@
+const colors = require('colors');
 const fs = require('fs');
+const zlib = require('zlib');
 const path = require('path');
 const server = require('http').createServer((request, response) => {
     const dataPath = path.resolve('data/big.txt');
     console.log('got request', dataPath);
 
     // serving big file via stream to reduce memory consumption
-    fs.createReadStream(dataPath).pipe(response);
+    // with additional gzip
+    fs.createReadStream(dataPath).pipe(zlib.createGzip()).pipe(response);
 });
 
-server.listen(8080);
+const port = 8080;
+
+server.listen(port, () => console.log(`Server listening on port ${colors.yellow(port)}\nUse ${colors.blue('curl')} or ${colors.blue('browser')} to connect.`));
 
 // ===============
 // process cleanup
